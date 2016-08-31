@@ -2,18 +2,32 @@
 
 import sys
 
-size = int(sys.argv[1]) # fix this so that default is full intron
-file = open(sys.argv[2], 'r')
-
 def name_stub(filename): #gets the name of the file not including the file extension
     for i in range(len(filename)-1,-1,-1):
         if filename[i] == '.':
             return filename[0:i]
 
-name_stub = name_stub(sys.argv[2]) #gets the name of the file not including the file extension
-output = open("%s_introns_%s.bed" % (name_stub, size), 'w') #open output file
+if len(sys.argv) < 2:
+    print "Not enough arguments. Usage: rMATS_to_bed_introns.py <length> <rMATS_SE_file>\n"
+elif len(sys.argv) == 2:
+    size = None
+    file = sys.argv[1]
+elif len(sys.argv) == 3:
+    size = int(sys.argv[1]) # fix this so that default is full intron
+    file = sys.argv[2]
+else:
+    print "Too many arguments. Usage: rMATS_to_bed_introns.py <length> <rMATS_SE_file>\n"
 
-for line in file:
+open_file = open(file, 'r')
+
+name_stub = name_stub(file) #gets the name of the file not including the file extension
+
+if size:
+    output = open("%s_introns_%s.bed" % (name_stub, size), 'w') #open output file
+else:
+    output = open("%s_introns.bed" % name_stub, 'w') #open output file
+
+for line in open_file:
     line = line.rstrip("\n") #removes carriage return
     fields = line.split("\t")
     chr = fields[3][3:]
@@ -21,25 +35,27 @@ for line in file:
         pass
     name = fields[1] + "|" + chr + ":" + fields[5] + "-" + fields[6] #later, add in "ex" and "in"
     if fields[4] == "+":
-        upper = int(fields[5]) - size #gets coordinates for 200 bp upstream...
-        if upper >= int(fields[8]):  # or the whole intron, whichever is shorter. Is this int() necessary? Does fields[8] start as a string?
+        if size:
+            upper = int(fields[5]) - size #gets coordinates for x bp upstream...
+            lower = int(fields[6]) + size #...and downstream
+        if size and (upper >= int(fields[8])):  # or the whole intron, whichever is shorter. Is this int() necessary? Does fields[8] start as a string?
             output.write(chr + "\t" + str(upper) + "\t" + fields[5] + "\t" + name + "|" + "up" + "\t" + fields[22] + "\t" + fields[4] + "\n")
         else:
             output.write(chr + "\t" + fields[8] + "\t" + fields[5] + "\t" + name + "|" + "up" + "\t" + fields[22] + "\t" + fields[4] + "\n")
-        lower = int(fields[6]) + size
-        if lower <= int(fields[9]):
+        if size and (lower <= int(fields[9])):
             output.write(chr + "\t" + fields[6] + "\t" + str(lower) + "\t" + name + "|" + "down" + "\t" + fields[22] + "\t" + fields[4] + "\n")
         else:
             output.write(chr + "\t" + fields[6] + "\t" + fields[9] + "\t" + name + "|" "down" + "\t" + fields[22] + "\t" + fields[4] + "\n")
     elif fields[4] == "-":
-        upper = int(fields[6]) + size
+        if size:
+            upper = int(fields[6]) + size
+            lower = int(fields[5]) - size
         name = fields[1] + "|" + chr + ":" + fields[5] + "-" + fields[6]
-        if upper <= int(fields[9]): #not sure if int is necessary
+        if size and (upper <= int(fields[9])): #not sure if int is necessary
             output.write(chr + "\t" + fields[6] + "\t" + str(upper) + "\t" + name + "|" + "up" + "\t" + fields[22] + "\t" + fields[4] + "\n")
         else:
             output.write(chr + "\t" + fields[6] + "\t" + fields[9] + "\t" + name + "|" + "up" + "\t" + fields[22] + "\t" + fields[4] + "\n")
-        lower = int(fields[5]) - size
-        if lower >= int(fields[7]):
+        if size and (lower >= int(fields[7])):
             output.write(chr + "\t" + str(lower) + "\t" + fields[5] + "\t" + name + "|" + "down" + "\t" + fields[22] + "\t" + fields[4] + "\n")
         else:
             output.write(chr + "\t" + fields[8] + "\t" + fields[5] + "\t" + name + "|" + "down" + "\t" + fields[22] + "\t" + fields[4] + "\n")
@@ -49,5 +65,5 @@ for line in file:
 
 
 
-file.close()
+open_file.close()
 output.close()

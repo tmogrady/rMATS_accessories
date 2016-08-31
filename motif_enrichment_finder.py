@@ -5,6 +5,7 @@
 
 import sys,itertools,operator
 import matplotlib.pyplot as plt
+import scipy.stats as st
 
 l = int(sys.argv[1]) #length of motifs to investigate
 
@@ -82,8 +83,13 @@ sorted_Z_DICT = sorted(Z_DICT.items(), key=operator.itemgetter(1), reverse=True)
 #print sorted_Z_DICT
 
 output = open("%dmer_z-scores.txt" % l, 'w') #add a header line with names of script and input files
-output.write("%dmer z-scores from motif_enrichment_finder_per_sequence.py\ninput files: %s, %s\n" % (l,sys.argv[2],sys.argv[3]))
-output.write('\n'.join('%s %s' % x for x in sorted_Z_DICT))
+output.write("%dmer z-scores from motif_enrichment_finder_per_sequence.py\ninput files: %s, %s\nmotif\tz-score\tp-value\n" % (l,sys.argv[2],sys.argv[3]))
+for item in sorted_Z_DICT:
+    p = st.norm.cdf(item[1])
+    if p > 0.5:
+        p = 1-p
+    output.write(item[0] + "\t" + str(Z_DICT[item[0]]) + "\t" + str(p) + "\n")
+#output.write('\n'.join('%s %s' % x for x in sorted_Z_DICT))
 output.close
 
 #plot the z-scores as a histogram. Maybe should make this a function and call it?

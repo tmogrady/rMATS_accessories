@@ -83,11 +83,13 @@ sorted_Z_DICT = sorted(Z_DICT.items(), key=operator.itemgetter(1), reverse=True)
 #print sorted_Z_DICT
 
 output = open("%dmer_z-scores.txt" % l, 'w') #add a header line with names of script and input files
-output.write("%dmer z-scores from motif_enrichment_finder_per_sequence.py\ninput files: %s, %s\nmotif\tz-score\tp-value\n" % (l,sys.argv[2],sys.argv[3]))
+bonferroni = 0.05 / float(len(Z_DICT))
+output.write("%dmer z-scores from motif_enrichment_finder_per_sequence.py\ninput files: %s, %s\n\nBonferroni-corrected p-value cutoff for alpha = 0.05: %f\n\nmotif\tz-score\tp-value\n" % (l,sys.argv[2],sys.argv[3],bonferroni))
 for item in sorted_Z_DICT:
     p = st.norm.cdf(item[1])
     if p > 0.5:
         p = 1-p
+    p = p * 2
     output.write(item[0] + "\t" + str(Z_DICT[item[0]]) + "\t" + str(p) + "\n")
 #output.write('\n'.join('%s %s' % x for x in sorted_Z_DICT))
 output.close

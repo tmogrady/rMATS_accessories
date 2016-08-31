@@ -62,7 +62,6 @@ for line in open_file:
             output.write(chr + "\t" + fields[8] + "\t" + fields[5] + "\t" + name + "|" + "down" + "\t" + fields[22] + "\t" + fields[4] + "\n")
 
 #need to:
-#figure out 0- and 1-based issues for starts and ends
 #figure out how to deal with duplicates
 
 open_file.close()

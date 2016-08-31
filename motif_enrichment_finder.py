@@ -29,7 +29,6 @@ def count_motif_seqs(file, DICTIONARY): # to get counts of how many sequences ha
             for motif in seq_motifs:
                 if motif.count('N') == 0: #change this so that motifs must have A C T G only
                     DICTIONARY[motif] += 1 #adds this sequence to the dictionary count for the detected sequences
-            #print seq_motifs. DO I need to return this?
     return line_count
 
 def z_score(DICT1, DICT2, n1, n2):
@@ -76,22 +75,20 @@ control_file.close()
 #calculate the z-score for enrichment of each motif
 print "calculating z-scores"
 Z_DICT = z_score(SAMPLE_MOTIFS, CONTROL_MOTIFS, sample_seq_number, control_seq_number)
-#print Z_DICT
 
 #sort the z-scores to list motifs in descending order
 sorted_Z_DICT = sorted(Z_DICT.items(), key=operator.itemgetter(1), reverse=True)
-#print sorted_Z_DICT
 
-output = open("%dmer_z-scores.txt" % l, 'w') #add a header line with names of script and input files
+output = open("%dmer_z-scores.txt" % l, 'w') # prints out a text file with the z-scores and p-values
 bonferroni = 0.05 / float(len(Z_DICT))
 output.write("%dmer z-scores from motif_enrichment_finder_per_sequence.py\ninput files: %s, %s\n\nBonferroni-corrected p-value cutoff for alpha = 0.05: %f\n\nmotif\tz-score\tp-value\n" % (l,sys.argv[2],sys.argv[3],bonferroni))
 for item in sorted_Z_DICT:
     p = st.norm.cdf(item[1])
     if p > 0.5:
-        p = 1-p
-    p = p * 2
+        p = 1-p #so that p-values for motifs enriched in sample are close to 0 instead of close to 1
+    p = p * 2 #make it two-tailed
     output.write(item[0] + "\t" + str(Z_DICT[item[0]]) + "\t" + str(p) + "\n")
-#output.write('\n'.join('%s %s' % x for x in sorted_Z_DICT))
+#output.write('\n'.join('%s %s' % x for x in sorted_Z_DICT)) # to print out motifs and z-scores without p-values
 output.close
 
 #plot the z-scores as a histogram. Maybe should make this a function and call it?

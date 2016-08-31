@@ -1,4 +1,5 @@
-#takes information from rMATS SE output files to produce a bed file of introns flanking the exons. User can indicate whether they want the full intron or only the specified number of basepairs nearest the exon.
+#takes information from rMATS SE output files to produce a bed file of introns flanking the exons. Default is to return the full intron: if the user includes a number before the file name, the script will return that number of intronic bases closest to the exon boundary (or the full intron, whichever is shorter)
+#USAGE: rMATS_to_bed_introns.py <number_of_bases-OPTIONAL> <rMATS_SE_file>
 
 import sys
 
@@ -13,7 +14,7 @@ elif len(sys.argv) == 2:
     size = None
     file = sys.argv[1]
 elif len(sys.argv) == 3:
-    size = int(sys.argv[1]) # fix this so that default is full intron
+    size = int(sys.argv[1])
     file = sys.argv[2]
 else:
     print "Too many arguments. Usage: rMATS_to_bed_introns.py <length> <rMATS_SE_file>\n"
@@ -62,8 +63,7 @@ for line in open_file:
 
 #need to:
 #figure out 0- and 1-based issues for starts and ends
-
-
+#figure out how to deal with duplicates
 
 open_file.close()
 output.close()

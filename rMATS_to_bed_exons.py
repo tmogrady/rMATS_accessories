@@ -1,4 +1,4 @@
-#takes information from rMATS SE output files to produce a bed file of introns flanking the exons. User can indicate whether they want the full intron or only the specified number of basepairs nearest the exon.
+#takes information from rMATS SE output files to produce a bed file of exons
 
 import sys
 

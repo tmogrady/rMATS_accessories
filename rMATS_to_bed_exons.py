@@ -22,3 +22,5 @@ for line in file:
 
 file.close()
 output.close()
+
+#should add colour-coding for included & excluded exons

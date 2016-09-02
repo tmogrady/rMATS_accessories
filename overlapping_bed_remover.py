@@ -33,6 +33,7 @@ for line in open_file:
             bed_line = cluster[random_index][0] + "\t" + cluster[random_index][2] + "\t" + cluster[random_index][3] + "\t" + cluster[random_index][0]+":"+cluster[random_index][2]+"-"+cluster[random_index][3] + "\t1\t" + cluster[random_index][1] + "\n"
             output.write(bed_line)
             cluster = []
+            cluster.append([fields[0], fields[5], fields[1], fields[2]])
 
 random_index = random.randint(0, len(cluster)-1) #print out last feature
 bed_line = cluster[random_index][0] + "\t" + cluster[random_index][2] + "\t" + cluster[random_index][3] + "\t" + cluster[random_index][0]+":"+cluster[random_index][2]+"-"+cluster[random_index][3] + "\t1\t" + cluster[random_index][1] + "\n"

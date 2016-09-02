@@ -39,7 +39,7 @@ for line in open_file:
     fields = line.split("\t")
     chr = fields[3][3:]
     if fields[0] == 'ID': #skips header lines
-        pass
+        continue
     name = chr + fields[4] + fields[5] + "-" + fields[6]
     if size:
         upper = int(fields[5]) - size #gets coordinates for x bp upstream...
